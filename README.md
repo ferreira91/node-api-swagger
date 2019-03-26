@@ -1,1 +1,2 @@
-# Skeleton project for Swagger
+# node-api-swagger
+Node API Swagger examples
