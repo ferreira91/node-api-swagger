@@ -1,0 +1,197 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Movie API Catalog
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /movies:
+    # our controller name
+    x-swagger-router-controller: moviesController
+    get:
+      operationId: getAll
+      description: get the movie list
+      tags:
+        - Movies
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetMoviesListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      operationId: save
+      description: add a new movie to the list
+      tags:
+        - Movies
+      # movie info to be stored
+      parameters:
+        - name: title
+          description: Movie properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Movie"
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/GenericResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /movies/{id}:
+    # our controller name
+    x-swagger-router-controller: moviesController
+    get:
+      operationId: getOne
+      description: get a movie
+      tags:
+        - Movies
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetMovieResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      operationId: update
+      description: update a movie
+      tags:
+        - Movies
+      # define the parameters
+      parameters:
+        - name: id
+          description: Movie id
+          type: string
+          in: path
+          required: true
+        - name: title
+          description: Movie properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Movie"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GenericResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      operationId: remove
+      description: delete a movie
+      tags:
+        - Movies
+      # define th parameters
+      parameters:
+        - name: id
+          description: Movie id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GenericResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  GetMoviesListResponse:
+    required:
+      - movies
+    properties:
+      # The array of movies
+      movies:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            year:
+              type: number
+
+  GetMovieResponse:
+    required:
+      - id
+      - title
+      - year
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      year:
+        type: number
+
+  GenericResponse:
+    type: object
+    properties:
+      status:
+        type: boolean
+        description: 'returns true if successful'
+      description:
+        type: string
+        description: a short comment
+    required:
+      - status
+      - description
+
+  Movie:
+    type: object
+    properties:
+      title:
+        type: string
+        description: task object name
+      year:
+        type: number
+        description: task description
+    required:
+      - title
+      - year
+
+  ErrorResponse:
+    properties:
+      status:
+        type: boolean
+      message:
+        type: string
